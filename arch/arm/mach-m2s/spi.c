@@ -221,5 +221,56 @@ void __init m2s_spi_init(void)
 
 		spi_register_board_info(&sf2_dev_kit_sf_inf, 1);
 #endif
+	} 
+	/*
+	 * RCU2 Flash things
+	 */
+	else if (p == PLATFORM_SF2_TPC_RCU) {
+#if defined(CONFIG_M2S_MSS_SPI0) && defined(CONFIG_MTD_M25P80)
+		/*
+		 * SPI Flash partitioning:
+		 * 0-1ffff:		U-boot environment
+		 * 20000-3fffff:	Linux bootable image
+		 * 400000-end of Flash:	JFFS2 filesystem
+		 */
+		 /* TODO: needs tweaking */
+#		define M2S_SOM_SF_MTD_OFFSET		0x010000 /* 64 KB */
+#		define M2S_SOM_SF_MTD_SIZE0		0x400000 /*  4 MB */
+#		define M2S_SOM_SF_MTD_SIZE1		0xBF0000 /*~12 MB */
+		static struct mtd_partition m2s_som_sf_mtd[] = {
+			{
+				.name = "spi_flash_uboot_env",
+				.offset = 0,
+				.size = M2S_SOM_SF_MTD_OFFSET,
+			}, {
+				.name = "spi_flash_linux_image",
+				.offset = M2S_SOM_SF_MTD_OFFSET,
+				.size = M2S_SOM_SF_MTD_SIZE0,
+			}, {
+				.name = "spi_flash_jffs2",
+				.offset = M2S_SOM_SF_MTD_OFFSET +
+					  M2S_SOM_SF_MTD_SIZE0,
+				.size = M2S_SOM_SF_MTD_SIZE1,
+			},
+		};
+
+		static struct flash_platform_data m2s_som_sf_data = {
+			.name = "s25fl256s1",
+			.parts = m2s_som_sf_mtd,
+			.nr_parts = ARRAY_SIZE(m2s_som_sf_mtd),
+			.type = "s25fl256s1",
+		};
+
+		static struct spi_board_info m2s_som_sf_inf = {
+			.modalias = "m25p32",
+			.max_speed_hz = 160000000/32,
+			.bus_num = 0,
+			.chip_select = 0,
+			.platform_data = &m2s_som_sf_data,
+			.mode = SPI_MODE_3,
+		};
+
+		spi_register_board_info(&m2s_som_sf_inf, 1);
+#endif
 	}
 }
