@@ -66,6 +66,7 @@ int m2s_device_get(void)
 	case PLATFORM_M2S_FG484_SOM:
 	case PLATFORM_G4M_VB:
 	case PLATFORM_SF2_DEV_KIT:
+	case PLATFORM_SF2_TPC_RCU:
 	default:
 		r = DEVICE_M2S_050;
 		break;
@@ -87,6 +88,8 @@ static int __init m2s_platform_parse(char *s)
 		m2s_platform = PLATFORM_SF2_DEV_KIT;
 	else if (!strcmp(s, "m2s-fg484-som"))
 		m2s_platform = PLATFORM_M2S_FG484_SOM;
+	else if (!strcmp(s, "rcu-2.0"))
+		m2s_platform = PLATFORM_SF2_TPC_RCU;
 
 	return 1;
 }
