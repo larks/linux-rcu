@@ -155,7 +155,7 @@ void __init m2s_i2c_init(void)
 	/*
  	 * Perform board-specific I2C device registration
  	 */
-	if (p == PLATFORM_M2S_SOM || p == PLATFORM_M2S_FG484_SOM) {
+	if (p == PLATFORM_M2S_SOM || p == PLATFORM_M2S_FG484_SOM || p == PLATFORM_SF2_TPC_RCU) {
 #if defined(CONFIG_M2S_MSS_I2C1)
 
 		/*
