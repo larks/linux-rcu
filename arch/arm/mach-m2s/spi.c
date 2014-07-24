@@ -253,6 +253,13 @@ void __init m2s_spi_init(void)
 				.size = M2S_SOM_SF_MTD_SIZE1,
 			},
 		};
+        static struct mtd_partition goldflash_sf_mtd[] = {
+            {
+                .name = "golden_flash_partition",
+                .offset = 0,
+                .size = 0x800000, /* 8 MB */
+            },   
+        };
 
 		static struct flash_platform_data m2s_som_sf_data = {
 			.name = "s25fl256s1",
@@ -260,17 +267,46 @@ void __init m2s_spi_init(void)
 			.nr_parts = ARRAY_SIZE(m2s_som_sf_mtd),
 			.type = "s25fl256s1",
 		};
+        static struct flash_platform_data golden_flash_data = {
+            .name = "s25fl164k",
+            .parts = goldflash_sf_mtd,
+            .nr_parts = ARRAY_SIZE(goldflash_sf_mtd),
+            .type = "s25fl164k",
+        };
 
-		static struct spi_board_info m2s_som_sf_inf = {
-			.modalias = "m25p32",
+
+		static struct spi_board_info m2s_som_sf_inf[] = {
+			{
+            .modalias = "m25p32",
 			.max_speed_hz = 160000000/32,
 			.bus_num = 0,
 			.chip_select = 0,
 			.platform_data = &m2s_som_sf_data,
 			.mode = SPI_MODE_3,
+            },
+            { /* Golden flash */
+            .modalias = "m25p32",
+            .max_speed_hz = 160000000/32,
+            .bus_num = 0,
+            .chip_select = 1,
+            .platform_data = &golden_flash_data,
+            .mode = SPI_MODE_3,
+            },
 		};
 
-		spi_register_board_info(&m2s_som_sf_inf, 1);
+		spi_register_board_info(&m2s_som_sf_inf, 2); /* If this does not work, use 2*/
+        
+        /* Golden flash */
+        /*
+        static struct flash_platform_data golden_flash_data = {
+            .name = "s25fl164k"    ,
+            .parts = m2
+        }
+        */
+
+
+
+
 #endif
 	}
 }
